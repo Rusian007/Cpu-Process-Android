@@ -13,6 +13,7 @@ public class ProcessActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.process_main);
+
     }
     
     private List getNumOfProcesses(){
