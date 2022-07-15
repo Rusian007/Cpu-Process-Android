@@ -1,5 +1,6 @@
 package com.example.monitor;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -22,16 +23,15 @@ import android.widget.Toast;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.RandomAccessFile;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 
 public class MainActivity extends AppCompatActivity {
+    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 1;
     Button button;
     double percentAvail;
     double availableMegs;
@@ -47,18 +47,31 @@ public class MainActivity extends AppCompatActivity {
     private TextView text2, text4, text5;
     private ProgressBar RamprogressBar;
     private ProgressBar ProgressBarCircularRAM , progressBarCircularCPU;
-    private static final int CAMERA_PERMISSION_CODE = 100;
     private static final int STORAGE_PERMISSION_CODE = 101;
+    private static final int ACCESS_NETWORK_CODE = 100
 
 
+    @RequiresApi(api = Build.VERSION_CODES.Q)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE, STORAGE_PERMISSION_CODE);
 
-      //  button = (Button) findViewById(R.id.button);
+        checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,STORAGE_PERMISSION_CODE);
+        checkPermission(Manifest.permission.ACCESS_NETWORK_STATE,ACCESS_NETWORK_CODE);
+        if (checkSelfPermission(Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.INTERNET}, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+
+            // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+            // app-defined int constant
+
+            return;
+        } else {
+            Toast.makeText(MainActivity.this, "Permission granted", Toast.LENGTH_SHORT).show();
+        }
+
+        button = (Button) findViewById(R.id.button);
         textView = findViewById(R.id.textView);
         cpuText = findViewById(R.id.cpu);
         RamText = findViewById(R.id.ram);
@@ -68,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         RamprogressBar = findViewById(R.id.progressBar);
         CpuUsageCircularText = findViewById(R.id.text_view_progress_cpu);
         text2 = findViewById(R.id.textView2);
+
         text4 = findViewById(R.id.textView4);
         text5 = findViewById(R.id.textView5);
         RamUsageCircularText = findViewById(R.id.text_view_progress);
@@ -87,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         RamUsageCircularText.setTypeface(customLight);
         text2.setTypeface(customfont);
         text4.setTypeface(customfont);
-        text4.setTypeface(customfont);
+        text5.setTypeface(customfont);
         RamUsageText.setTypeface(customLight);
         CpuUsageCircularText.setTypeface(customLight);
 
@@ -100,23 +114,26 @@ public class MainActivity extends AppCompatActivity {
         RamCountText.setText(String.valueOf(totalMemory + " GB"));
         CpuCountText.setText(String.valueOf(cores));
 
+
+
         // Handler ** Do not touch **
         final Handler h = new Handler();
         h.post(new Runnable() {
             @Override
             public void run() {
-                double num = readUsage();
+
                // textView.setText(String.valueOf(num));
                 getMeminfo();
                 RamUsageText.setText(String.valueOf(availableMegs+"MB" + " / " + totalMemory+"MB"));
                 RamprogressBar.setProgress( (int)percentAvail);
-                ProgressBarCircularRAM.setProgress((int)percentAvail);
-                progressBarCircularCPU.setProgress(50); //Change later
+                int RamUsage = (int)(100 - percentAvail );
+                ProgressBarCircularRAM.setProgress(RamUsage);
+                progressBarCircularCPU.setProgress(55); //Change later
 
                 percentAvail = Math.round(percentAvail * 100);
                 percentAvail = percentAvail/100;
                 RamUsageCircularText.setText(String.valueOf(percentAvail+"%"));
-                CpuUsageCircularText.setText("50%"); //Will change Later
+                CpuUsageCircularText.setText("55%"); //Will change Later
 
                 h.postDelayed(this, 2000);
             }
@@ -124,13 +141,13 @@ public class MainActivity extends AppCompatActivity {
         // Handler finish here
 
         // Button on click "see Process" button
-       /* button.setOnClickListener(new View.OnClickListener() {
+       button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.i("Button Click","Clicked");
                 openNewActivity();
             }
-        }); */
+        });
 
     }
 
@@ -142,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
 
     // All functions to get ram and cpu
     private void getMeminfo(){
+
         ActivityManager.MemoryInfo mi = new ActivityManager.MemoryInfo();
         ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         activityManager.getMemoryInfo(mi);
@@ -151,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
     //Percentage can be calculated for API 16+
         percentAvail = mi.availMem / (double)mi.totalMem * 100.0;
     }
+
 
     private int getNumCores() {
         //Private Class to display only CPU devices in the directory listing
@@ -174,47 +193,9 @@ public class MainActivity extends AppCompatActivity {
             return files.length;
         } catch(Exception e) {
             //Default to return 1 core
-            System.out.println("Error Occured !!!!!!!!!!!!!");
+            System.out.println("Error Occured "+e);
             return 1;
         }
-    }
-
-    private double readUsage() {
-
-        try {
-            RandomAccessFile reader = new RandomAccessFile("/proc/stat", "r");
-            String load = reader.readLine();
-
-            String[] toks = load.split(" +");  // Split on one or more spaces
-
-            long idle1 = Long.parseLong(toks[4]);
-
-
-            long cpu1 = Long.parseLong(toks[2]) + Long.parseLong(toks[3]) + Long.parseLong(toks[5])
-                    + Long.parseLong(toks[6]) + Long.parseLong(toks[7]) + Long.parseLong(toks[8] );
-
-
-            try {
-                Thread.sleep(360);
-            } catch (Exception e) {}
-
-            reader.seek(0);
-            load = reader.readLine();
-            reader.close();
-
-            toks = load.split(" +");
-
-            long idle2 = Long.parseLong(toks[4] );
-            long cpu2 = Long.parseLong(toks[2]) + Long.parseLong(toks[3]) + Long.parseLong(toks[5])
-                    + Long.parseLong(toks[6]) + Long.parseLong(toks[7]) + Long.parseLong(toks[8] );
-
-            return (double)(cpu2 - cpu1 ) / ((cpu2 + idle2 ) - (cpu1 + idle1 ));
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-        return (GetUsage() * 100 ); // Usage in percentage
     }
 
 
@@ -236,5 +217,7 @@ public class MainActivity extends AppCompatActivity {
     private double GetUsage(){
         return Math.random();
     }
+
+
 
 }
