@@ -12,7 +12,9 @@ import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
+import android.os.StatFs;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -48,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar RamprogressBar;
     private ProgressBar ProgressBarCircularRAM , progressBarCircularCPU;
     private static final int STORAGE_PERMISSION_CODE = 101;
-    private static final int ACCESS_NETWORK_CODE = 100
+    private static final int ACCESS_NETWORK_CODE = 100;
 
 
     @RequiresApi(api = Build.VERSION_CODES.Q)
@@ -60,16 +62,8 @@ public class MainActivity extends AppCompatActivity {
 
         checkPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE,STORAGE_PERMISSION_CODE);
         checkPermission(Manifest.permission.ACCESS_NETWORK_STATE,ACCESS_NETWORK_CODE);
-        if (checkSelfPermission(Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.INTERNET}, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+        checkPermission(Manifest.permission.INTERNET,ACCESS_NETWORK_CODE);
 
-            // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
-            // app-defined int constant
-
-            return;
-        } else {
-            Toast.makeText(MainActivity.this, "Permission granted", Toast.LENGTH_SHORT).show();
-        }
 
         button = (Button) findViewById(R.id.button);
         textView = findViewById(R.id.textView);
@@ -105,6 +99,12 @@ public class MainActivity extends AppCompatActivity {
         RamUsageText.setTypeface(customLight);
         CpuUsageCircularText.setTypeface(customLight);
 
+        // showing percentage of External Storage
+        long megAvailable = GetAvailableStorage();
+        long totalmeg = GetTotalStorage();
+        double percentageMemory = getPercentage(totalmeg , megAvailable);
+        CpuUsageCircularText.setText(String.valueOf(percentageMemory+"%"));
+
         int cores = getNumCores();
         getMeminfo();
         totalMemory = totalMemory / 1000;
@@ -128,12 +128,12 @@ public class MainActivity extends AppCompatActivity {
                 RamprogressBar.setProgress( (int)percentAvail);
                 int RamUsage = (int)(100 - percentAvail );
                 ProgressBarCircularRAM.setProgress(RamUsage);
-                progressBarCircularCPU.setProgress(55); //Change later
+               progressBarCircularCPU.setProgress(55); //Change later
 
                 percentAvail = Math.round(percentAvail * 100);
                 percentAvail = percentAvail/100;
                 RamUsageCircularText.setText(String.valueOf(percentAvail+"%"));
-                CpuUsageCircularText.setText("55%"); //Will change Later
+               // CpuUsageCircularText.setText("55%"); //Will change Later
 
                 h.postDelayed(this, 2000);
             }
@@ -218,6 +218,25 @@ public class MainActivity extends AppCompatActivity {
         return Math.random();
     }
 
+    private long GetAvailableStorage(){
+        StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
+        long bytesAvailable = (long)stat.getFreeBlocks() * (long)stat.getBlockSize();
+        long megAvailable = bytesAvailable / 1048576;
+        return megAvailable;
+    }
+    private long GetTotalStorage(){
+        StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
+        long bytesAvailable = (long)stat.getBlockSize() *(long)stat.getBlockCount();
+        long megAvailable = bytesAvailable / 1048576;
+        return megAvailable;
+    }
+    private double getPercentage(long total, long available){
+        double result;
+        result = (((double) available / (double) total)*100);
+        result = Math.round(result * 100);
+        result = result/100;
+        return result;
+    }
 
 
 }
