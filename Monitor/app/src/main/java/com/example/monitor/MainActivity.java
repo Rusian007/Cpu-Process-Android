@@ -35,11 +35,18 @@ public class MainActivity extends AppCompatActivity {
     Button button;
     double percentAvail;
     double availableMegs;
+    double totalMemory;
+
     TextView textView ;
     TextView cpuText ;
     TextView RamText ;
     TextView RamCountText;
     TextView CpuCountText;
+    TextView RamUsageText;
+    TextView RamUsageCircularText, CpuUsageCircularText;
+    private TextView text2, text4, text5;
+    private ProgressBar RamprogressBar;
+    private ProgressBar ProgressBarCircularRAM , progressBarCircularCPU;
     private static final int CAMERA_PERMISSION_CODE = 100;
     private static final int STORAGE_PERMISSION_CODE = 101;
 
@@ -55,20 +62,42 @@ public class MainActivity extends AppCompatActivity {
         textView = findViewById(R.id.textView);
         cpuText = findViewById(R.id.cpu);
         RamText = findViewById(R.id.ram);
+        RamUsageText = findViewById(R.id.ramUsage);
         RamCountText = findViewById(R.id.ramCount);
         CpuCountText = findViewById(R.id.cpuCount);
+        RamprogressBar = findViewById(R.id.progressBar);
+        CpuUsageCircularText = findViewById(R.id.text_view_progress_cpu);
+        text2 = findViewById(R.id.textView2);
+        text4 = findViewById(R.id.textView4);
+        text5 = findViewById(R.id.textView5);
+        RamUsageCircularText = findViewById(R.id.text_view_progress);
+        ProgressBarCircularRAM = findViewById(R.id.progress_bar_circular);
+        progressBarCircularCPU = findViewById(R.id.progress_bar_circular_cpu);
         CpuCountText.setText("");
 
-       Typeface customfontBold = Typeface.createFromAsset(getAssets(),"fonts/Roboto-Bold.ttf");
-        Typeface customfont = Typeface.createFromAsset(getAssets(),"fonts/Roboto-Regular.ttf");
+       Typeface customfontBold = Typeface.createFromAsset(getAssets(),"fonts/TitilliumWeb-Bold.ttf");
+        Typeface customfont = Typeface.createFromAsset(getAssets(),"fonts/TitilliumWeb-Regular.ttf");
+        Typeface customLight = Typeface.createFromAsset(getAssets(),"fonts/TitilliumWeb-Light.ttf");
 
         textView.setTypeface(customfontBold);
         cpuText.setTypeface(customfont);
         RamText.setTypeface(customfont);
         CpuCountText.setTypeface(customfontBold);
         RamCountText.setTypeface(customfontBold);
+        RamUsageCircularText.setTypeface(customLight);
+        text2.setTypeface(customfont);
+        text4.setTypeface(customfont);
+        text4.setTypeface(customfont);
+        RamUsageText.setTypeface(customLight);
+        CpuUsageCircularText.setTypeface(customLight);
 
         int cores = getNumCores();
+        getMeminfo();
+        totalMemory = totalMemory / 1000;
+        totalMemory = Math.round(totalMemory * 100);
+        totalMemory = totalMemory/100;
+
+        RamCountText.setText(String.valueOf(totalMemory + " GB"));
         CpuCountText.setText(String.valueOf(cores));
 
         // Handler ** Do not touch **
@@ -79,6 +108,16 @@ public class MainActivity extends AppCompatActivity {
                 double num = readUsage();
                // textView.setText(String.valueOf(num));
                 getMeminfo();
+                RamUsageText.setText(String.valueOf(availableMegs+"MB" + " / " + totalMemory+"MB"));
+                RamprogressBar.setProgress( (int)percentAvail);
+                ProgressBarCircularRAM.setProgress((int)percentAvail);
+                progressBarCircularCPU.setProgress(50); //Change later
+
+                percentAvail = Math.round(percentAvail * 100);
+                percentAvail = percentAvail/100;
+                RamUsageCircularText.setText(String.valueOf(percentAvail+"%"));
+                CpuUsageCircularText.setText("50%"); //Will change Later
+
                 h.postDelayed(this, 2000);
             }
         });
@@ -107,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
         ActivityManager activityManager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
         activityManager.getMemoryInfo(mi);
         availableMegs = mi.availMem / 0x100000L;
+        totalMemory= mi.totalMem/ 0x100000L;
 
     //Percentage can be calculated for API 16+
         percentAvail = mi.availMem / (double)mi.totalMem * 100.0;

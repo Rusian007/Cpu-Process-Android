@@ -8,8 +8,8 @@
                 android:angle="45"
                 android:startColor="#17dba9"
                 android:endColor="#208cff" />
-            <corners android:topLeftRadius="30dp" android:topRightRadius="30dp"
-                android:bottomLeftRadius="2dp" android:bottomRightRadius="2dp"/>
+            <corners android:topLeftRadius="2dp" android:topRightRadius="2dp"
+                android:bottomLeftRadius="30dp" android:bottomRightRadius="30dp"/>
             <size android:width="100dp"
                 android:height="100dp"/>
         </shape>
@@ -24,8 +24,8 @@
         <shape android:shape="rectangle" >
             <solid android:color="#333333" />
 
-            <corners android:topLeftRadius="30dp" android:topRightRadius="30dp"
-                android:bottomLeftRadius="2dp" android:bottomRightRadius="2dp"/>
+            <corners android:topLeftRadius="2dp" android:topRightRadius="2dp"
+                android:bottomLeftRadius="30dp" android:bottomRightRadius="30dp"/>
         </shape>
 
     </item>
