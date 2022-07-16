@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
         Typeface customfont = Typeface.createFromAsset(getAssets(),"fonts/TitilliumWeb-Regular.ttf");
         Typeface customLight = Typeface.createFromAsset(getAssets(),"fonts/TitilliumWeb-Light.ttf");
 
+        button.setTypeface(customfontBold);
         textView.setTypeface(customfontBold);
         cpuText.setTypeface(customfont);
         RamText.setTypeface(customfont);
@@ -146,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.i("Button Click","Clicked");
                 openNewActivity();
+
             }
         });
 
@@ -155,6 +157,7 @@ public class MainActivity extends AppCompatActivity {
     public void openNewActivity(){
         Intent intent = new Intent(this, ProcessActivity.class);
         startActivity(intent);
+        finish();
     }
 
     // All functions to get ram and cpu
