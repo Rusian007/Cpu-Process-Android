@@ -26,15 +26,10 @@ import java.util.Map;
 public class ProcessActivity extends AppCompatActivity {
     private TextView totalInternalSizeText,
             AvailableInternalSizeText,
-            totalExternalSizeText,
-            AvailableExternalText,
             text,
             text3,
             text6,
-            text7,
-            text8,
-            InternalStgText,
-            ExternalStgText;
+            InternalStgText;
     ImageButton backBtn;
 
     @Override
@@ -48,44 +43,27 @@ public class ProcessActivity extends AppCompatActivity {
 
        text3 = findViewById(R.id.textView3);
         text6 = findViewById(R.id.textView6);
-        text7 = findViewById(R.id.textView7);
-        text8 = findViewById(R.id.textView8);
         backBtn = (ImageButton) findViewById(R.id.imageButton);
         InternalStgText = findViewById(R.id.InternalStorage);
-        ExternalStgText = findViewById(R.id.ExternalStorage);
         totalInternalSizeText = findViewById(R.id.totalInternalSize);
         AvailableInternalSizeText = findViewById(R.id.AvailableInternalSize);
-        totalExternalSizeText = findViewById(R.id.totalExternalSize);
-        AvailableExternalText = findViewById(R.id.AvailableExternalSize);
 
         InternalStgText.setTypeface(customfontBold);
-        ExternalStgText.setTypeface(customfontBold);
         text3.setTypeface(customLight);
         text6.setTypeface(customLight);
-        text7.setTypeface(customLight);
-        text8.setTypeface(customLight);
         totalInternalSizeText.setTypeface(customfont);
-        totalExternalSizeText.setTypeface(customfont);
         AvailableInternalSizeText.setTypeface(customfont);
-        AvailableExternalText.setTypeface(customfont);
 
         long totalInternal, AvailableInternal, totalExternal, AvailableExternal;
         totalInternal = TotalInternalStorages();
         AvailableInternal = AvailableInternalStorages();
 
-        totalExternal = TotalExternalStorages();
-        AvailableExternal = AvailableExternalStorages();
 
         String totalInternalResult = checkMB_GB(totalInternal);
         String availableInternalResult = checkMB_GB(AvailableInternal);
-        String totalExternalResult = checkMB_GB(totalExternal);
-        String availableExternalResult = checkMB_GB(AvailableExternal);
 
         totalInternalSizeText.setText(totalInternalResult);
-        totalExternalSizeText.setText(totalExternalResult);
-
         AvailableInternalSizeText.setText(availableInternalResult);
-        AvailableExternalText.setText(availableExternalResult);
 
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -164,18 +142,6 @@ public class ProcessActivity extends AppCompatActivity {
     }
     private long TotalInternalStorages(){
         StatFs stat = new StatFs(Environment.getDataDirectory().getPath());
-        long bytesAvailable = (long)stat.getBlockSize() *(long)stat.getBlockCount();
-        long megAvailable = bytesAvailable / 1048576;
-        return megAvailable;
-    }
-    private long AvailableExternalStorages(){
-        StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
-        long bytesAvailable = (long)stat.getFreeBlocks() * (long)stat.getBlockSize();
-        long megAvailable = bytesAvailable / 1048576;
-        return megAvailable;
-    }
-    private long TotalExternalStorages(){
-        StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
         long bytesAvailable = (long)stat.getBlockSize() *(long)stat.getBlockCount();
         long megAvailable = bytesAvailable / 1048576;
         return megAvailable;
