@@ -22,6 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="160dp"
         android:layout_marginLeft="20dp"
+        android:layout_marginBottom="40dp"
         android:layout_marginTop="20dp"
         android:layout_marginRight="20dp"
         android:background="#2b2b2b"
@@ -100,6 +101,17 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/recycleView"
+            android:layout_marginHorizontal="20dp"
+            >
+
+        </androidx.recyclerview.widget.RecyclerView>
+
 
 
 

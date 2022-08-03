@@ -15,10 +15,13 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +35,9 @@ public class ProcessActivity extends AppCompatActivity {
             InternalStgText;
     ImageButton backBtn;
 
+    private static final String TAG = "ProcessActivity";
+    private ArrayList<IndividualArray> theNames = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +49,7 @@ public class ProcessActivity extends AppCompatActivity {
 
        text3 = findViewById(R.id.textView3);
         text6 = findViewById(R.id.textView6);
+      //  text = findViewById(R.id.textView7);
         backBtn = (ImageButton) findViewById(R.id.imageButton);
         InternalStgText = findViewById(R.id.InternalStorage);
         totalInternalSizeText = findViewById(R.id.totalInternalSize);
@@ -65,6 +72,8 @@ public class ProcessActivity extends AppCompatActivity {
         totalInternalSizeText.setText(totalInternalResult);
         AvailableInternalSizeText.setText(availableInternalResult);
 
+        InitializeNamesArray();
+
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -72,17 +81,34 @@ public class ProcessActivity extends AppCompatActivity {
                 openNewActivity();
             }
         });
-    /*
-        try {
+
+      /*  try {
             Map<String, String> outputmap = getCPUInfo();
             outputmap.forEach((key, value) -> text.append(key+ "= "+value+"\n"));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        */
+
+    */
 
 
+    }
+    private void InitializeNamesArray(){
+        try {
+            Map<String, String> outputmap = getCPUInfo();
+            outputmap.forEach((key, value) -> theNames.add(new IndividualArray(key, value)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
+        initRecycleView();
+    }
+    private void initRecycleView(){
+        Log.d(TAG, "Recycler initialized :)");
+        RecyclerView recyclerView = findViewById(R.id.recycleView);
+        RecycleViewAdapter adapter = new RecycleViewAdapter(this, theNames);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
     private String checkMB_GB(long size) {
