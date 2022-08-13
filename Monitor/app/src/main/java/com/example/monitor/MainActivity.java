@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     TextView RamUsageCircularText, CpuUsageCircularText;
     private TextView text2, text4, text5;
     private ProgressBar RamprogressBar;
-    private ProgressBar ProgressBarCircularRAM , progressBarCircularCPU;
+    private ProgressBar ProgressBarCircularRAM , progressBarCircularStorage;
     private static final int STORAGE_PERMISSION_CODE = 101;
     private static final int ACCESS_NETWORK_CODE = 100;
 
@@ -73,14 +73,14 @@ public class MainActivity extends AppCompatActivity {
         RamCountText = findViewById(R.id.ramCount);
         CpuCountText = findViewById(R.id.cpuCount);
         RamprogressBar = findViewById(R.id.progressBar);
-        CpuUsageCircularText = findViewById(R.id.text_view_progress_cpu);
+        CpuUsageCircularText = findViewById(R.id.text_view_progress_storage);
         text2 = findViewById(R.id.textView2);
 
         text4 = findViewById(R.id.textView4);
         text5 = findViewById(R.id.textView5);
         RamUsageCircularText = findViewById(R.id.text_view_progress);
         ProgressBarCircularRAM = findViewById(R.id.progress_bar_circular);
-        progressBarCircularCPU = findViewById(R.id.progress_bar_circular_cpu);
+        progressBarCircularStorage = findViewById(R.id.progress_bar_circular_storage);
         CpuCountText.setText("");
 
        Typeface customfontBold = Typeface.createFromAsset(getAssets(),"fonts/TitilliumWeb-Bold.ttf");
@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
         long totalmeg = GetTotalStorage();
         double percentageMemory = getPercentage(totalmeg , megAvailable);
         CpuUsageCircularText.setText(String.valueOf(percentageMemory+"%"));
+        progressBarCircularStorage.setProgress( (int) percentageMemory);
 
         int cores = getNumCores();
         getMeminfo();
@@ -129,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
                 RamprogressBar.setProgress( (int)percentAvail);
                 int RamUsage = (int)(100 - percentAvail );
                 ProgressBarCircularRAM.setProgress(RamUsage);
-               progressBarCircularCPU.setProgress(55); //Change later
+
 
                 percentAvail = Math.round(percentAvail * 100);
                 percentAvail = percentAvail/100;
@@ -210,16 +211,8 @@ public class MainActivity extends AppCompatActivity {
             // Requesting the permission
             ActivityCompat.requestPermissions(MainActivity.this, new String[] { permission }, requestCode);
         }
-        else {
-            Toast.makeText(MainActivity.this, "Permission already granted", Toast.LENGTH_SHORT).show();
-        }
     }
 
-
-
-    private double GetUsage(){
-        return Math.random();
-    }
 
     private long GetAvailableStorage(){
         StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
@@ -227,6 +220,7 @@ public class MainActivity extends AppCompatActivity {
         long megAvailable = bytesAvailable / 1048576;
         return megAvailable;
     }
+
     private long GetTotalStorage(){
         StatFs stat = new StatFs(Environment.getExternalStorageDirectory().getPath());
         long bytesAvailable = (long)stat.getBlockSize() *(long)stat.getBlockCount();

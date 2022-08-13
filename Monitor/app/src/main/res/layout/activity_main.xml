@@ -216,7 +216,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ProgressBar
-            android:id="@+id/progress_bar_circular_cpu"
+            android:id="@+id/progress_bar_circular_storage"
             android:layout_width="133dp"
             android:layout_height="127dp"
             android:layout_marginBottom="16dp"
@@ -228,14 +228,14 @@
             app:layout_constraintStart_toEndOf="@+id/progress_bar_circular" />
 
         <TextView
-            android:id="@+id/text_view_progress_cpu"
+            android:id="@+id/text_view_progress_storage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            app:layout_constraintBottom_toBottomOf="@+id/progress_bar_circular_cpu"
-            app:layout_constraintEnd_toEndOf="@+id/progress_bar_circular_cpu"
-            app:layout_constraintStart_toStartOf="@+id/progress_bar_circular_cpu"
-            app:layout_constraintTop_toTopOf="@+id/progress_bar_circular_cpu"
+            app:layout_constraintBottom_toBottomOf="@+id/progress_bar_circular_storage"
+            app:layout_constraintEnd_toEndOf="@+id/progress_bar_circular_storage"
+            app:layout_constraintStart_toStartOf="@+id/progress_bar_circular_storage"
+            app:layout_constraintTop_toTopOf="@+id/progress_bar_circular_storage"
             android:textSize="17dp"
             />
 
